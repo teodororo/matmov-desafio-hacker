@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafio Matmov - 2026.2</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Montserrat:wght@400;700&display=swap');
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: #1e1e24;
+            border: 2px solid #f39200; 
+            border-radius: 15px;
+            padding: 40px;
+            width: 95vw;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 20px rgba(243, 146, 0, 0.2);
+            box-sizing: border-box;
+        }
+
+        #intro-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 250px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #8db596; 
+            font-family: 'Courier Prime', monospace;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px rgba(141, 181, 150, 0.5);
+        }
+
+        .evil-computer {
+            font-size: 6rem;
+            margin: 20px 0;
+            animation: glitch 2s infinite;
+        }
+
+        .mission-text {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #e0e0e0;
+            max-width: 800px;
+        }
+
+        .btn-action {
+            background-color: #f39200;
+            color: #121212;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-action:hover {
+            background-color: #ffaa33;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(243, 146, 0, 0.6);
+        }
+
+        .btn-hint {
+            background-color: #2a2a35;
+            color: #8db596;
+            border: 2px solid #8db596;
+            margin-left: 10px;
+        }
+
+        .btn-hint:hover {
+            background-color: #8db596;
+            color: #121212;
+            transform: scale(1.05);
+        }
+
+        #game-screen {
+            display: none; 
+            flex-direction: column;
+            gap: 30px;
+            flex-grow: 1;
+        }
+
+        @media (min-width: 900px) {
+            #game-screen { flex-direction: row; }
+        }
+
+        .panel {
+            background-color: #2a2a35;
+            border: 1px solid #8db596;
+            border-radius: 10px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-left { flex: 1; justify-content: space-between; }
+        .panel-right { flex: 2; justify-content: flex-start; overflow-y: auto; }
+
+        .panel h2 {
+            color: #f39200;
+            font-family: 'Courier Prime', monospace;
+            margin-top: 0;
+            border-bottom: 1px solid #444;
+            padding-bottom: 15px;
+            text-align: center;
+            font-size: 1.8em;
+        }
+
+        .password-display {
+            font-family: 'Courier Prime', monospace;
+            font-size: 3rem;
+            letter-spacing: 12px;
+            text-align: center;
+            color: #8db596;
+            margin: 30px 0;
+            text-shadow: 0 0 8px rgba(141, 181, 150, 0.6);
+        }
+
+        .master-guess-area {
+            background-color: #1a1a20;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px dashed #555;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .master-guess-area p { margin-top: 0; font-size: 0.9em; color: #aaa; }
+        .master-guess-area input { width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+
+        .question-text {
+            font-size: 1.3rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .question-text ul {
+            margin-top: 10px;
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+        
+        .question-text li { margin-bottom: 10px; }
+
+        .input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .buttons-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        input[type="text"] {
+            padding: 15px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            border: 1px solid #555;
+            background-color: #121212;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+        }
+
+        input[type="text"]:focus { outline: none; border-color: #f39200; }
+
+        /* Estilos para Múltipla Escolha */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: #1a1a20;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        .radio-label:hover { background-color: #333; }
+        .radio-label input { margin-right: 15px; transform: scale(1.5); cursor: pointer; accent-color: #f39200; }
+
+        .feedback-msg {
+            text-align: center;
+            font-weight: bold;
+            min-height: 25px;
+            margin-top: 15px;
+            font-size: 1.1em;
+        }
+
+        .success { color: #8db596; }
+        .error { color: #ff4c4c; }
+
+        /* Estilos do Modal de Dica */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 100; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #1e1e24;
+            border: 2px solid #8db596;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 0 25px rgba(141, 181, 150, 0.4);
+        }
+
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover { color: #fff; }
+
+        .modal h3 {
+            color: #f39200;
+            font-family: 'Courier Prime', monospace;
+            margin-top: 0;
+            border-bottom: 1px dashed #555;
+            padding-bottom: 10px;
+        }
+
+        /* Caixa de Alerta (CUIDADO) */
+        .alert-box {
+            background-color: #1a1a20;
+            border-left: 4px solid #ff4c4c;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- TELA INICIAL -->
+        <div id="intro-screen">
+            <img src="logo_matmov.png" alt="Logo Matmov" class="logo">
+            <h1>Desafio Matmov - 2026.2</h1>
+            <div class="evil-computer">🤖💻👾</div>
+            <p class="mission-text">
+                Uma IA mal intencionada acabou de hackear os sistemas da Matmov, e está apagando todos os registros dos pontos do MovimentaMente dos alunos! Agora, é sua tarefa nos ajudar a descobrir a senha do sistema de TI para evitar esse desastre!
+            </p>
+            <button class="btn-action" onclick="iniciarDesafio()">Iniciar a Invasão</button>
+        </div>
+
+        <!-- TELA DO JOGO -->
+        <div id="game-screen">
+            
+            <!-- Painel Esquerdo: Senha -->
+            <div class="panel panel-left">
+                <div>
+                    <h2>STATUS DO SISTEMA</h2>
+                    <p style="text-align: center; color: #aaa;">Caracteres da senha corrompidos. Resolva as charadas matemáticas para descriptografar os dados.</p>
+                    <div id="password-display" class="password-display">_ _ _ _ _ _ _ _ _ _</div>
+                </div>
+
+                <div class="master-guess-area">
+                    <p>Você já deduziu a senha completa?</p>
+                    <input type="text" id="master-input" placeholder="Digite a senha inteira..." autocomplete="off">
+                    <button class="btn-action" style="width: 100%; padding: 10px;" onclick="tentarSenhaMestra()">Desbloquear</button>
+                    <div id="master-feedback" class="feedback-msg"></div>
+                </div>
+            </div>
+
+            <!-- Painel Direito: Questões -->
+            <div class="panel panel-right">
+                <h2>TERMINAL DE DESBLOQUEIO</h2>
+                
+                <div id="question-container">
+                    <div id="question-text" class="question-text">
+                        <!-- O texto da questão será injetado aqui -->
+                    </div>
+                    
+                    <div class="input-area">
+                        <!-- A caixa de texto ou botões de rádio serão injetados aqui -->
+                        <div id="dynamic-input-area"></div>
+
+                        <div class="buttons-row">
+                            <button class="btn-action" onclick="verificarResposta()">Processar Dados</button>
+                            <button class="btn-action btn-hint" onclick="abrirDica()">Ver Dica</button>
+                        </div>
+                    </div>
+                    <div id="feedback-message" class="feedback-msg"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE DICA -->
+    <div id="hint-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="fecharDica()">&times;</span>
+            <h3>DICA DO SISTEMA DE IA:</h3>
+            <p id="hint-text" style="font-size: 1.1rem; line-height: 1.5;">
+                <!-- O texto da dica entra aqui -->
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // CONFIGURAÇÃO DA SENHA
+        const senhaMestra = "M4tM0v@26!"; 
+        const tamanhoSenha = senhaMestra.length;
+        let etapaAtual = 0;
+        let senhaRevelada = Array(tamanhoSenha).fill("_"); 
+
+        // BANCO DE QUESTÕES
+        const questoes = [
+            {
+                tipo: "multipla",
+                texto: `<strong>Questão 1:</strong><br><br>
+                        Em relação a um código de 5 (cinco) letras, sabe-se que:<br>
+                        <ul>
+                            <li><strong>TREVO</strong> e <strong>GLERO</strong> não tem letras em comum com ele;</li>
+                            <li><strong>PRELO</strong> tem uma letra em comum, que está na posição correta;</li>
+                            <li><strong>PARVO</strong>, <strong>CONTO</strong> e <strong>SENAL</strong> tem, cada um, duas letras comuns com o código, uma que se encontra na mesma posição;</li>
+                            <li><strong>MUNCA</strong> tem com ele 3 (três) letras em comum, que se encontra na mesma posição;</li>
+                            <li><strong>TIROL</strong> tem uma letra em comum, que está na posição correta.</li>
+                        </ul>
+                        O código que se refere o enunciado da questão é:`,
+                opcoes: {
+                    "a": "MIECA",
+                    "b": "PUNCI",
+                    "c": "PINAI",
+                    "d": "PANCI",
+                    "e": "PINCA"
+                },
+                resposta: "e",
+                dica: `Para entender a dinâmica, analise o esquema abaixo que exemplifica como descobrir uma senha avaliando letras certas e suas posições (como no clássico jogo Senha):<br><br>
+                       <div style="text-align: center; margin-top: 15px;">
+                           <img src="dica_1.png" alt="Dinâmica de Senha" style="max-width: 100%; border-radius: 8px; background-color: white; padding: 10px;">
+                       </div><br>
+                       Aplique essa mesma lógica de análise e eliminação para as palavras do enunciado!`
+            },
+            {
+                tipo: "texto",
+                texto: `<strong>Questão 2:</strong><br><br>
+                        Um crime foi cometido por uma pessoa de um grupo de cinco suspeitos: André, Bernardo, Caio, Daniel e Edu. Perguntados sobre quem era o culpado cada um deles afirmou:<br>
+                        <ul>
+                            <li><strong>André:</strong> “Sou inocente”</li>
+                            <li><strong>Bernardo:</strong> “Caio é o culpado”</li>
+                            <li><strong>Caio:</strong> “Edu é o culpado”</li>
+                            <li><strong>Daniel:</strong> “André disse a verdade”</li>
+                            <li><strong>Edu:</strong> “Bernardo mentiu”</li>
+                        </ul>
+                        Sabendo-se que apenas um dos suspeitos mentiu e que todos os outros disseram a verdade, pode-se concluir que o culpado é? <em>(Digite apenas o primeiro nome)</em>`,
+                resposta: "edu",
+                dica: "Procure por uma contradição direta! Bernardo acusa Caio, mas Edu diz que Bernardo está mentindo. Como eles dizem coisas opostas, a ÚNICA mentira do grupo tem que ser de um dos dois. Isso significa que as outras três pessoas (André, Caio e Daniel) estão dizendo verdades absolutas. O que o Caio afirmou?"
+            },
+            {
+                tipo: "texto",
+                texto: `<strong>Questão 3:</strong><br><br>
+                        Quatro amigos vão ao museu e um deles entra sem pagar. Um fiscal quer saber quem foi o penetra:<br>
+                        <ul>
+                            <li><strong>Benjamim:</strong> “Eu não fui.”</li>
+                            <li><strong>Carlos:</strong> “Foi o Pedro.”</li>
+                            <li><strong>Mário:</strong> “Foi o Carlos.”</li>
+                            <li><strong>Pedro:</strong> “O Mário não tem razão.”</li>
+                        </ul>
+                        Só um deles mentiu. Quem não pagou a entrada? <em>(Digite apenas o nome)</em>`,
+                resposta: "pedro",
+                dica: "Assim como na questão anterior, busque a contradição! Mário diz que a culpa é do Carlos, mas o Pedro diz que o Mário está errado. Um dos dois tem que ser o mentiroso! Como só existe um mentiroso no grupo inteiro, a afirmação do Carlos é verdadeira ou falsa?"
+            },
+            {
+                tipo: "multipla",
+                texto: `<strong>Questão 4:</strong><br><br>
+                        Em uma pesquisa de satisfação com 200 pessoas, obteve-se os seguintes dados sobre a preferência por dois produtos (X e Y):<br>
+                        <ul>
+                            <li>120 pessoas gostam do produto X.</li>
+                            <li>100 pessoas gostam do produto Y.</li>
+                            <li>30 pessoas não gostam de nenhum dos dois produtos.</li>
+                        </ul>
+                        Qual a probabilidade de escolher, ao acaso, uma pessoa que goste de apenas um dos produtos?`,
+                opcoes: {
+                    "a": "25%",
+                    "b": "40%",
+                    "c": "50%",
+                    "d": "60%",
+                    "e": "85%"
+                },
+                resposta: "d",
+                dica: `<strong>Fórmula Base:</strong> A probabilidade é a chance de algo acontecer, calculada dividindo os <strong>(Casos Favoráveis)</strong> pelo <strong>(Total de Casos Possíveis)</strong>.<br><br>
+                       <strong>Passo a Passo:</strong><br>
+                       1) O total de casos possíveis é 200.<br>
+                       2) Descubra o total de pessoas que gostam de <em>pelo menos</em> um produto subtraindo os que não gostam de nada do total.<br>
+                       3) Ao somar quem gosta de X com quem gosta de Y, você conta a interseção (quem gosta dos dois) duas vezes. Encontre esse valor da interseção!<br>
+                       4) Subtraia a interseção do total de X e do total de Y para encontrar quem gosta de <strong>APENAS</strong> X e <strong>APENAS</strong> Y. Some esses dois.<br>
+                       5) Divida o valor encontrado no passo 4 por 200 e converta para porcentagem!`
+            },
+            {
+                tipo: "texto",
+                texto: `<strong>Questão 5: Quantos copos?</strong><br><br>
+                        Na figura você pode ver que uma garrafa e um copo são equilibrados com um jarro; a garrafa é equilibrada com o copo e um pequeno prato; dois jarros são equilibrados com três pratos iguais ao anterior.<br><br>
+                        <div style="text-align: center; margin: 15px 0;">
+                            <img src="imagem_balanca.png" alt="Balanças com garrafa, copo, jarro e prato" style="max-width: 350px; width: 100%; height: auto; border-radius: 8px; background-color: white; padding: 10px;">
+                        </div>
+                        Quantos copos devem ser colocados no prato livre da balança, para equilibrar a garrafa? <em>(Digite apenas o número)</em>`,
+                resposta: "5",
+                dica: `Podemos transformar isso em "matematiquês" (um sistema de equações)!<br><br>
+                       <strong>1)</strong> Garrafa + Copo = Jarro<br>
+                       <strong>2)</strong> Garrafa = Copo + Prato<br>
+                       <strong>3)</strong> 2 Jarros = 3 Pratos<br><br>
+                       Tente substituir as informações da primeira e da segunda balança na terceira para descobrir a relação direta entre a Garrafa e o Copo!`
+            },
+            {
+                tipo: "multipla",
+                texto: `<strong>Questão 6:</strong><br><br>
+                        Em uma oficina foram reparados 40 veículos durante um mês, entre carros e motocicletas. Foram exatamente 100 o número total de rodas dos veículos.<br><br>
+                        <div style="text-align: center; margin: 15px 0;">
+                            <img src="imagem_carro_moto.png" alt="Carros e Motocicletas" style="max-width: 350px; width: 100%; height: auto; border-radius: 8px; background-color: white; padding: 10px;">
+                        </div>
+                        Quantos carros e quantas motocicletas eles consertaram?`,
+                opcoes: {
+                    "a": "10 carros e 30 motocicletas",
+                    "b": "20 carros e 20 motocicletas",
+                    "c": "30 carros e 10 motocicletas",
+                    "d": "15 carros e 25 motocicletas",
+                    "e": "25 carros e 15 motocicletas"
+                },
+                resposta: "a",
+                dica: `Podemos montar um sistema de equações para resolver!<br><br>
+                       <strong>1)</strong> Carros (C) + Motos (M) = 40 veículos<br>
+                       <strong>2)</strong> Lembre-se: carros têm 4 rodas e motos têm 2 rodas. Então: 4C + 2M = 100 rodas.<br><br>
+                       <strong>Truque lógico:</strong> Se todos os 40 veículos fossem motos (2 rodas cada), teríamos apenas 80 rodas na oficina. Mas nós temos 100! Essa diferença de 20 rodas (100 - 80) precisou vir dos veículos que têm duas rodas a mais. De quantos carros precisamos para preencher essas 20 rodas faltantes?`
+            },
+            {
+                tipo: "texto",
+                texto: `<strong>Questão 7:</strong><br><br>
+                        Quantos números de 0 a 100 têm o algarismo 6 ou 7?<br><br>
+                        <div style="text-align: center; margin: 15px 0;">
+                            <img src="imagem_6_7.png" alt="Algarismos 6 e 7" style="max-width: 350px; width: 100%; height: auto; border-radius: 8px; background-color: white; padding: 10px;">
+                        </div>
+                        <em>(Digite apenas o número)</em>`,
+                resposta: "36",
+                dica: `Cuidado para não contar duas vezes! <br><br>
+                       1) Conte todos os números em que a unidade é 6 ou 7 (ex: 6, 7, 16, 17, 26...).<br>
+                       2) Depois, conte toda a "família" dos sessenta (60 a 69) e a dos setenta (70 a 79).<br>
+                       3) Quantos números acabaram aparecendo nas duas contagens (como o 67 e o 76)? <br><br>
+                       Lembre-se de subtrair as repetições (a interseção!) do seu total.`
+            },
+            {
+                tipo: "texto",
+                texto: `<strong>Questão 8:</strong><br><br>
+                        Tem um ônibus com 7 garotas dentro. Cada garota tem 7 mochilas. Dentro de cada mochila, tem 7 gatos grandes. Cada gato grande tem 7 gatos pequenos. Todos os gatos têm 4 pernas.<br><br>
+                        Quantas pernas tem dentro do ônibus? <em>(Digite apenas o número)</em>`,
+                resposta: "10990",
+                dica: `Calma, vamos por partes (e muito cuidado para não esquecer ninguém)!<br><br>
+                       <strong>1) Meninas:</strong> 7 garotas × 2 pernas = 14 pernas.<br>
+                       <strong>2) Mochilas:</strong> 7 garotas × 7 mochilas = 49 mochilas.<br>
+                       <strong>3) Gatos grandes:</strong> 49 mochilas × 7 gatos = 343 gatos grandes.<br>
+                       <strong>4) Gatos pequenos:</strong> 343 gatos grandes × 7 filhotes = 2401 gatos pequenos.<br>
+                       <strong>5) Total de gatos:</strong> 343 + 2401 = 2744 gatos.<br><br>
+                       Multiplique o total de gatos por 4 e depois some com as pernas das garotas!`
+            },
+            {
+                tipo: "texto",
+                texto: `<strong>Questão 9:</strong><br><br>
+                        Em uma família há três mães, três filhas, duas avós, duas netas, uma bisavó e uma bisneta. Quantas pessoas compõem essa família?<br><br>
+                        <em>(Digite apenas o número)</em>`,
+                resposta: "4",
+                dica: `Pense em gerações! Uma única pessoa pode acumular vários papéis dependendo de quem está olhando.<br><br>
+                       Imagine uma linha reta de descendência: a Bisavó teve uma filha, que teve uma filha, que teve uma filha... Desenhe as mulheres dessa família em ordem de idade e conte quantos papéis cada uma delas exerce em relação às outras. Qual é o menor número de pessoas necessário para formar essa linha do tempo familiar?`
+            },
+            {
+                tipo: "texto",
+                texto: `<strong>Questão 10:</strong><br><br>
+                        Em uma sala onde estão 100 pessoas, sabe-se que 99% são homens. Quantos homens devem sair para que a porcentagem de homens na sala passe a ser 98%?<br><br>
+                        
+                        <div style="text-align: center; margin: 15px 0;">
+                            <img src="imagem_turma.png" alt="Pessoas na sala" style="max-width: 350px; width: 100%; height: auto; border-radius: 8px; background-color: white; padding: 10px;">
+                        </div>
+
+                        <div class="alert-box">
+                            <strong>CUIDADO:</strong> não basta um homem sair para a porcentagem cair para 98%, pois se um homem sair, teremos um percentual de homens correspondente a:<br><br>
+                            
+                            <!-- Equação feita em HTML/CSS para imitar o LaTeX sem depender de imagens -->
+                            <div style="font-family: 'Courier Prime', monospace; font-size: 1.5em; display: flex; align-items: center; justify-content: center; gap: 10px; color: #f39200;">
+                                <div style="display: flex; flex-direction: column; align-items: center; line-height: 1.2;">
+                                    <span style="border-bottom: 2px solid #f39200; padding: 0 5px;">98</span>
+                                    <span style="padding: 0 5px;">99</span>
+                                </div>
+                                <div>&cong; 0,9899 ou 98,99%</div>
+                            </div>
+
+                        </div><br>
+                        
+                        <em>(Digite apenas o número de homens que devem sair)</em>`,
+                resposta: "50",
+                dica: `Concentre-se em quem <strong>NÃO</strong> sai da sala: as mulheres!<br><br>
+                       1) No início, se 99% são homens em um grupo de 100 pessoas, quantas mulheres temos? (Apenas 1 mulher).<br>
+                       2) Se alguns homens saem e a porcentagem deles cai para 98%, isso significa que aquela mesma 1 mulher agora representa os outros <strong>2%</strong> do novo total de pessoas na sala.<br>
+                       3) Se 1 pessoa equivale a 2%, qual é o novo total de pessoas na sala (os 100%)?<br>
+                       4) Descobrindo o novo total, basta ver a diferença com as 100 pessoas iniciais para saber quantos homens tiveram que sair!`
+            }
+        ];
+
+        // FUNÇÕES DO JOGO
+        function iniciarDesafio() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'flex';
+            atualizarTelaSenha();
+            carregarQuestao(etapaAtual);
+        }
+
+        function atualizarTelaSenha() {
+            document.getElementById('password-display').innerText = senhaRevelada.join(""); 
+        }
+
+        function carregarQuestao(indice) {
+            const q = questoes[indice];
+            document.getElementById('question-text').innerHTML = q.texto;
+            document.getElementById('hint-text').innerHTML = q.dica;
+            
+            const dynamicArea = document.getElementById('dynamic-input-area');
+            
+            if (q.tipo === "multipla") {
+                let html = '<div class="radio-group">';
+                for (const [letra, valor] of Object.entries(q.opcoes)) {
+                    html += `
+                        <label class="radio-label">
+                            <input type="radio" name="resposta-radio" value="${letra}">
+                            <strong>${letra})</strong> &nbsp; ${valor}
+                        </label>
+                    `;
+                }
+                html += '</div>';
+                dynamicArea.innerHTML = html;
+            } else {
+                dynamicArea.innerHTML = `<input type="text" id="answer-input" placeholder="Sua resposta..." autocomplete="off">`;
+                
+                document.getElementById("answer-input").addEventListener("keypress", function(event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        verificarResposta();
+                    }
+                });
+                
+                setTimeout(() => document.getElementById('answer-input').focus(), 100);
+            }
+        }
+
+        function verificarResposta() {
+            const q = questoes[etapaAtual];
+            const feedback = document.getElementById('feedback-message');
+            let respostaUsuario = "";
+
+            if (q.tipo === "multipla") {
+                const selecionado = document.querySelector('input[name="resposta-radio"]:checked');
+                if (selecionado) {
+                    respostaUsuario = selecionado.value;
+                } else {
+                    feedback.className = "error";
+                    feedback.innerText = "Selecione uma alternativa antes de processar!";
+                    setTimeout(() => { feedback.innerText = ""; }, 2000);
+                    return;
+                }
+            } else {
+                respostaUsuario = document.getElementById('answer-input').value.trim().toLowerCase();
+            }
+
+            // O replace(" ", "") remove espaços extras para garantir flexibilidade nas caixas de texto
+            if (respostaUsuario.replace(" ", "") === q.resposta.toLowerCase()) {
+                senhaRevelada[etapaAtual] = senhaMestra[etapaAtual];
+                atualizarTelaSenha();
+                etapaAtual++;
+                
+                feedback.className = "success";
+                feedback.innerText = "Fragmento recuperado com sucesso!";
+
+                if (etapaAtual >= tamanhoSenha) {
+                    setTimeout(() => { telaDeVitoria(); }, 1500);
+                } else {
+                    setTimeout(() => {
+                        feedback.innerText = "";
+                        carregarQuestao(etapaAtual);
+                    }, 1500);
+                }
+            } else {
+                feedback.className = "error";
+                feedback.innerText = "Erro Crítico. Cálculo divergente.";
+                setTimeout(() => { feedback.innerText = ""; }, 2000);
+            }
+        }
+
+        function tentarSenhaMestra() {
+            const inputMaster = document.getElementById('master-input');
+            const feedbackMaster = document.getElementById('master-feedback');
+            const palpite = inputMaster.value.trim();
+
+            if (palpite === senhaMestra) {
+                telaDeVitoria();
+            } else {
+                feedbackMaster.className = "error";
+                feedbackMaster.innerText = "Senha Incorreta. Cuidado!";
+                setTimeout(() => { feedbackMaster.innerText = ""; }, 2500);
+            }
+        }
+
+        function telaDeVitoria() {
+            document.getElementById('game-screen').innerHTML = `
+                <div style="width: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                    <h1 style="color:#8db596; font-size: 4em; font-family: 'Courier Prime', monospace; margin-bottom: 10px;">ACESSO CONCEDIDO!</h1>
+                    <div style="font-size: 6rem; margin: 20px 0;">🎉🔓🛡️</div>
+                    <p style="font-size: 1.5em; max-width: 800px;">
+                        <strong>Sistema Recuperado com Sucesso!</strong><br><br>
+                        A senha correta era: <span style="color:#f39200; font-family: 'Courier Prime', monospace;">${senhaMestra}</span><br><br>
+                        Excelente trabalho! Os pontos do MovimentaMente estão a salvo graças aos conhecimentos matemáticos de vocês.
+                    </p>
+                </div>
+            `;
+        }
+
+        // LÓGICA DO MODAL DE DICA
+        const modal = document.getElementById("hint-modal");
+        
+        function abrirDica() {
+            modal.style.display = "flex";
+        }
+        
+        function fecharDica() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                fecharDica();
+            }
+        }
+
+        document.getElementById("master-input").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                tentarSenhaMestra();
+            }
+        });
+    </script>
+
+</body>
+</html>
